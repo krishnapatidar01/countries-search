@@ -9,16 +9,18 @@ function App() {
   const [filteredCountries, setFilteredCountries] = useState([]);
 
   useEffect(() => {
-    fetch(API_URL)
-      .then((res) => res.json())
-      .then((data) => {
-        setCountries(data);
-        setFilteredCountries(data);
-      })
-      .catch((err) => {
-        console.error("Error fetching countries:", err);
-      });
-  }, []);
+  const fetchCountries = async () => {
+    try {
+      const res = await fetch('https://countries-search-data-prod-812920491762.asia-south1.run.app/countries');
+      const data = await res.json();
+      setCountries(data);
+    } catch (error) {
+      console.error("API fetch error:", error);
+    }
+  };
+
+  fetchCountries();
+}, []);
 
   useEffect(() => {
     const filtered = countries.filter((country) =>
@@ -32,7 +34,7 @@ function App() {
       <h1>Country Flags Search</h1>
       <input
         type="text"
-        placeholder="Search for a country"
+        placeholder="Search for a countries..."
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         className="searchInput"
