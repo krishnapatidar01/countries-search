@@ -11,20 +11,35 @@ function App() {
   const [error, setError] = useState(false);
 
   useEffect(() => {
+    const controller = new AbortController();
+    const signal = controller.signal;
+
     const fetchCountries = async () => {
       try {
-        const res = await fetch(API_URL);
-        const data = await res.json();
+        const response = await fetch(API_URL, {
+          method: "GET",
+          signal,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!response.ok) throw new Error("Failed to fetch");
+
+        const data = await response.json();
         setCountries(data);
-      } catch (error) {
+        setError(false); // Reset error in case it was previously set
+      } catch (err) {
         setError(true);
-        console.error("API fetch error:", error);
+        console.error("API fetch error:", err);
       } finally {
         setLoading(false);
       }
     };
 
     fetchCountries();
+
+    return () => controller.abort();
   }, []);
 
   useEffect(() => {
@@ -53,8 +68,15 @@ function App() {
       {!loading && !error && (
         <div className="countriesGrid" data-testid="countries-grid">
           {filteredCountries.map((country, index) => (
-            <div className="countryCard" key={index} data-testid="country-card">
-              <img src={country.png} alt={`Flag of ${country.common}`} />
+            <div
+              className="countryCard"
+              key={country.common}
+              data-testid="country-card"
+            >
+              <img
+                src={country.png}
+                alt={`Flag of ${country.common}`}
+              />
               <p>{country.common}</p>
             </div>
           ))}
