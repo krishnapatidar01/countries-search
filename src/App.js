@@ -7,20 +7,25 @@ function App() {
   const [countries, setCountries] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredCountries, setFilteredCountries] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
-  const fetchCountries = async () => {
-    try {
-      const res = await fetch('https://countries-search-data-prod-812920491762.asia-south1.run.app/countries');
-      const data = await res.json();
-      setCountries(data);
-    } catch (error) {
-      console.error("API fetch error:", error);
-    }
-  };
+    const fetchCountries = async () => {
+      try {
+        const res = await fetch(API_URL);
+        const data = await res.json();
+        setCountries(data);
+      } catch (error) {
+        setError(true);
+        console.error("API fetch error:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  fetchCountries();
-}, []);
+    fetchCountries();
+  }, []);
 
   useEffect(() => {
     const filtered = countries.filter((country) =>
@@ -32,21 +37,29 @@ function App() {
   return (
     <div className="container">
       <h1>Country Flags Search</h1>
+
       <input
         type="text"
-        placeholder="Search for a countries..."
+        placeholder="Search for a country..."
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         className="searchInput"
+        data-testid="search-input"
       />
-      <div className="countriesGrid">
-        {filteredCountries.map((country, index) => (
-          <div className="countryCard" key={index}>
-            <img src={country.png} alt={country.common} />
-            <p>{country.common}</p>
-          </div>
-        ))}
-      </div>
+
+      {loading && <p data-testid="loading-text">Loading...</p>}
+      {error && <p data-testid="error-text">Failed to load countries.</p>}
+
+      {!loading && !error && (
+        <div className="countriesGrid" data-testid="countries-grid">
+          {filteredCountries.map((country, index) => (
+            <div className="countryCard" key={index} data-testid="country-card">
+              <img src={country.png} alt={`Flag of ${country.common}`} />
+              <p>{country.common}</p>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
