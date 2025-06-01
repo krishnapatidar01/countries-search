@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
 
-const API_URL = "https://countries-search-data-prod-812920491762.asia-south1.run.app/countries";
+const API_URL =
+  "https://countries-search-data-prod-812920491762.asia-south1.run.app/countries";
 
 function App() {
   const [countries, setCountries] = useState([]);
@@ -28,7 +29,7 @@ function App() {
 
         const data = await response.json();
         setCountries(data);
-        setError(false); // Reset error in case it was previously set
+        setError(false);
       } catch (err) {
         setError(true);
         console.error("API fetch error:", err);
@@ -67,7 +68,7 @@ function App() {
 
       {!loading && !error && (
         <div className="countriesGrid" data-testid="countries-grid">
-          {filteredCountries.map((country, index) => (
+          {filteredCountries.map((country) => (
             <div
               className="countryCard"
               key={country.common}
