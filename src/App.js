@@ -28,7 +28,7 @@ function App() {
 
         const data = await response.json();
         setCountries(data);
-        setError(false);
+        setError(false); // Reset error in case it was previously set
       } catch (err) {
         setError(true);
         console.error("API fetch error:", err);
@@ -44,7 +44,7 @@ function App() {
 
   useEffect(() => {
     const filtered = countries.filter((country) =>
-      country.name.toLowerCase().includes(searchTerm.toLowerCase())
+      country.common.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setFilteredCountries(filtered);
   }, [searchTerm, countries]);
@@ -67,17 +67,17 @@ function App() {
 
       {!loading && !error && (
         <div className="countriesGrid" data-testid="countries-grid">
-          {filteredCountries.map((country) => (
+          {filteredCountries.map((country, index) => (
             <div
               className="countryCard"
-              key={country.name}
+              key={country.common}
               data-testid="country-card"
             >
               <img
-                src={country.flag}
-                alt={`Flag of ${country.name}`}
+                src={country.png}
+                alt={`Flag of ${country.common}`}
               />
-              <p>{country.name}</p>
+              <p>{country.common}</p>
             </div>
           ))}
         </div>
